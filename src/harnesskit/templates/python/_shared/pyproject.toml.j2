@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "{{ description }}"
 requires-python = ">=3.11"
 license = "MIT"
+{% if author -%}
 authors = [{ name = "{{ author }}" }]
+{% endif -%}
 dependencies = [
 {% if is_cli_tool -%}
     "click>=8.1",
