@@ -2,12 +2,13 @@
 
 setup:            ## Initialize dev environment
 	uv sync --dev
+	uv run pre-commit install --hook-type commit-msg
 
 lint:             ## Ruff lint check
 	uv run ruff check src/ tests/
 
 lint-fix:         ## Auto-fix lint issues
-	uv run ruff check --fix src/ tests/
+	uv run ruff check --fix --unsafe-fixes src/ tests/
 
 format:           ## Ruff format
 	uv run ruff format src/ tests/

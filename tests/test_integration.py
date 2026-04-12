@@ -13,12 +13,12 @@ ALL_PYTHON_TYPES = [
 ]
 
 
-def _generate(tmp_path: Path, project_type: ProjectType) -> Path:
+def _generate(tmp_path: Path, project_type: ProjectType, language: Language = Language.PYTHON) -> Path:
     config = ProjectConfig(
         project_name="integration_test",
         description="Integration test project",
         author="tester",
-        language=Language.PYTHON,
+        language=language,
         project_type=project_type,
         git_init=False,
     )
@@ -55,11 +55,30 @@ def test_all_python_types_have_harness_check(tmp_path: Path) -> None:
         assert (project_dir / "scripts" / "harness-check.sh").is_file()
 
 
-def test_makefile_check_target_for_all_types(tmp_path: Path) -> None:
-    """Every Makefile has the 'check' target."""
+def test_python_makefile_structure(tmp_path: Path) -> None:
+    """Every Python Makefile has required targets and pre-commit setup."""
     for i, pt in enumerate(ALL_PYTHON_TYPES):
         out = tmp_path / str(i)
         out.mkdir()
         project_dir = _generate(out, pt)
-        content = (project_dir / "Makefile").read_text()
-        assert "check:" in content, f"Missing check: in {pt.value}"
+        makefile_content = (project_dir / "Makefile").read_text()
+
+        # Verify Makefile targets
+        assert "check:" in makefile_content, f"Missing check: in {pt.value}"
+        assert (
+            "pre-commit install --hook-type commit-msg" in makefile_content
+        ), f"Missing pre-commit install in {pt.value}"
+        assert "--unsafe-fixes" in makefile_content, f"Missing --unsafe-fixes in {pt.value}"
+
+
+def test_typescript_makefile_structure(tmp_path: Path) -> None:
+    """Every TypeScript Makefile has pre-commit setup."""
+    for i, pt in enumerate(ALL_PYTHON_TYPES):
+        out = tmp_path / f"ts_{i}"
+        out.mkdir()
+        project_dir = _generate(out, pt, language=Language.TYPESCRIPT)
+        makefile_content = (project_dir / "Makefile").read_text()
+
+        assert (
+            "pre-commit install --hook-type commit-msg" in makefile_content
+        ), f"Missing pre-commit install in TS {pt.value}"
