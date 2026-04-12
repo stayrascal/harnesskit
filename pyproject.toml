@@ -3,8 +3,8 @@ name = "harnesskit"
 version = "0.1.0"
 description = "AI Native Repository Generator"
 requires-python = ">=3.11"
-license = "MIT"
-authors = [{ name = "kuaige" }]
+license = "Apache-2.0"
+authors = [{ name = "stayrascal" }]
 dependencies = [
     "click>=8.1",
     "questionary>=2.0",
