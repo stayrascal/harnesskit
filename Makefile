@@ -1,4 +1,4 @@
-.PHONY: setup dev lint lint-fix format typecheck test test-cov clean build publish check
+.PHONY: setup dev lint lint-fix format typecheck test test-cov clean build publish check harness-check
 
 setup:            ## Initialize dev environment
 	uv sync --dev
@@ -23,6 +23,9 @@ test-cov:         ## Run tests + coverage
 
 check:            ## Full check (CI use)
 	make lint && make typecheck && make test
+
+harness-check:    ## Validate harness engineering practices
+	bash scripts/harness-check.sh
 
 clean:            ## Clean build artifacts
 	rm -rf dist/ build/ *.egg-info
