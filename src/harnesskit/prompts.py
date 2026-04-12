@@ -53,10 +53,13 @@ def collect_inputs(project_name: str | None = None) -> ProjectConfig:
     Args:
         project_name: If provided, skip the project name prompt.
     """
-    project: str = project_name or questionary.text(
-        "Project name:",
-        validate=validate_project_name,
-    ).unsafe_ask()
+    project: str = (
+        project_name
+        or questionary.text(
+            "Project name:",
+            validate=validate_project_name,
+        ).unsafe_ask()
+    )
 
     description: str = questionary.text(
         "Description:",
@@ -97,8 +100,7 @@ def collect_inputs(project_name: str | None = None) -> ProjectConfig:
     addon_values: list[str] = questionary.checkbox(
         "Select addons:",
         choices=[
-            questionary.Choice(c["name"], value=c["value"], checked=c["value"] in defaults)
-            for c in ADDON_CHOICES
+            questionary.Choice(c["name"], value=c["value"], checked=c["value"] in defaults) for c in ADDON_CHOICES
         ],
     ).unsafe_ask()
 

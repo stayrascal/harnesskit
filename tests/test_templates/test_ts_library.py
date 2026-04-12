@@ -13,9 +13,20 @@ def test_ts_library_generates_expected_files(tmp_path: Path) -> None:
     gen.generate()
 
     project = tmp_path / "my-ts-lib"
-    for f in ["CLAUDE.md", "AGENTS.md", "Makefile", ".gitignore", "README.md",
-              "package.json", "tsconfig.json", "biome.json", ".pre-commit-config.yaml",
-              "src/index.ts", "src/core.ts", "tests/core.test.ts"]:
+    for f in [
+        "CLAUDE.md",
+        "AGENTS.md",
+        "Makefile",
+        ".gitignore",
+        "README.md",
+        "package.json",
+        "tsconfig.json",
+        "biome.json",
+        ".pre-commit-config.yaml",
+        "src/index.ts",
+        "src/core.ts",
+        "tests/core.test.ts",
+    ]:
         assert (project / f).is_file(), f"Missing: {f}"
 
 

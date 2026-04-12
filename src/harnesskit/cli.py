@@ -48,8 +48,9 @@ def new(name: str | None, output_dir: Path | None) -> None:
 
     lang_label = config.language.value.title()
     type_label = config.project_type.value.replace("_", " ").title()
-    console.print(f"\n Created [bold green]{config.project_name}/[/bold green]" +
-                  f" with {lang_label} + {type_label} template")
+    console.print(
+        f"\n Created [bold green]{config.project_name}/[/bold green]" + f" with {lang_label} + {type_label} template"
+    )
 
     if config.addons:
         console.print(f"   Addons: {', '.join(config.addons)}")

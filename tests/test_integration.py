@@ -65,9 +65,9 @@ def test_python_makefile_structure(tmp_path: Path) -> None:
 
         # Verify Makefile targets
         assert "check:" in makefile_content, f"Missing check: in {pt.value}"
-        assert (
-            "pre-commit install --hook-type commit-msg" in makefile_content
-        ), f"Missing pre-commit install in {pt.value}"
+        assert "pre-commit install --hook-type commit-msg" in makefile_content, (
+            f"Missing pre-commit install in {pt.value}"
+        )
         assert "--unsafe-fixes" in makefile_content, f"Missing --unsafe-fixes in {pt.value}"
 
 
@@ -79,6 +79,6 @@ def test_typescript_makefile_structure(tmp_path: Path) -> None:
         project_dir = _generate(out, pt, language=Language.TYPESCRIPT)
         makefile_content = (project_dir / "Makefile").read_text()
 
-        assert (
-            "pre-commit install --hook-type commit-msg" in makefile_content
-        ), f"Missing pre-commit install in TS {pt.value}"
+        assert "pre-commit install --hook-type commit-msg" in makefile_content, (
+            f"Missing pre-commit install in TS {pt.value}"
+        )

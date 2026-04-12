@@ -14,12 +14,21 @@ def test_python_library_generates_all_expected_files(tmp_path: Path) -> None:
 
     project = tmp_path / "testproject"
     expected_files = [
-        "CLAUDE.md", "AGENTS.md", "Makefile", ".gitignore", "README.md", "LICENSE",
+        "CLAUDE.md",
+        "AGENTS.md",
+        "Makefile",
+        ".gitignore",
+        "README.md",
+        "LICENSE",
         "commitlint.config.js",
-        "docs/adr/000-template.md", "docs/architecture.md",
+        "docs/adr/000-template.md",
+        "docs/architecture.md",
         "scripts/harness-check.sh",
-        "pyproject.toml", ".pre-commit-config.yaml", ".python-version",
-        "src/testproject/__init__.py", "src/testproject/core.py",
+        "pyproject.toml",
+        ".pre-commit-config.yaml",
+        ".python-version",
+        "src/testproject/__init__.py",
+        "src/testproject/core.py",
         "tests/test_core.py",
     ]
     for f in expected_files:
