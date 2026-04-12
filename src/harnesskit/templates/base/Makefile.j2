@@ -1,4 +1,4 @@
-.PHONY: setup lint format typecheck test test-cov check clean{% if needs_server %} dev test-e2e docker-build docker-run{% endif %}{% if is_library or is_cli_tool %} build{% endif %}{% if is_library %} publish{% endif %} harness-check
+.PHONY: setup lint lint-fix format typecheck test test-cov check clean{% if needs_server %} dev test-e2e docker-build docker-run{% endif %}{% if is_library or is_cli_tool %} build{% endif %}{% if is_library %} publish{% endif %} harness-check
 
 {% if is_python -%}
 setup:            ## Initialize dev environment
@@ -6,6 +6,9 @@ setup:            ## Initialize dev environment
 
 lint:             ## Ruff lint check
 	uv run ruff check src/ tests/
+
+lint-fix:         ## Auto-fix lint issues
+	uv run ruff check --fix src/ tests/
 
 format:           ## Ruff format
 	uv run ruff format src/ tests/
@@ -55,6 +58,9 @@ setup:            ## Install dependencies
 
 lint:             ## Biome lint check
 	bun run biome check src/
+
+lint-fix:         ## Auto-fix lint issues
+	bun run biome check --fix src/
 
 format:           ## Biome format
 	bun run biome format --write src/

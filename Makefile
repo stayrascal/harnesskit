@@ -1,10 +1,13 @@
-.PHONY: setup dev lint format typecheck test test-cov clean build publish check
+.PHONY: setup dev lint lint-fix format typecheck test test-cov clean build publish check
 
 setup:            ## Initialize dev environment
 	uv sync --dev
 
 lint:             ## Ruff lint check
 	uv run ruff check src/ tests/
+
+lint-fix:         ## Auto-fix lint issues
+	uv run ruff check --fix src/ tests/
 
 format:           ## Ruff format
 	uv run ruff format src/ tests/

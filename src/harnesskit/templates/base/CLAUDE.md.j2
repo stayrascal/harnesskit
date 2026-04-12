@@ -5,94 +5,59 @@
 ## Tech Stack
 {% if is_python -%}
 - Python 3.11+ / uv / Ruff / pyright strict / pytest
-{% if is_microservice -%}
-- Framework: FastAPI + uvicorn / Logging: structlog
-{% elif is_web_app -%}
-- Framework: FastAPI + Jinja2 / Logging: structlog
-{% elif is_cli_tool -%}
-- CLI: click
-{% endif -%}
+{% if is_microservice %}  - FastAPI + uvicorn + structlog{% endif -%}
+{% if is_web_app %}  - FastAPI + Jinja2 + structlog{% endif -%}
+{% if is_cli_tool %}  - click{% endif -%}
 {% elif is_typescript -%}
 - TypeScript / Bun / Biome / tsc strict / bun test
-{% if is_microservice -%}
-- Framework: Hono / Logging: pino
-{% elif is_web_app -%}
-{% if frontend_framework == "react" -%}
-- Frontend: React + Vite
-{% elif frontend_framework == "vue" -%}
-- Frontend: Vue + Vite
-{% elif frontend_framework == "hono_jsx" -%}
-- Framework: Hono JSX (SSR)
-{% else -%}
-- Framework: Hono + static files
-{% endif -%}
-{% elif is_cli_tool -%}
-- CLI: commander
-{% endif -%}
-{% endif -%}
+{% if is_microservice %}  - Hono + pino{% endif -%}
+{% if is_web_app and frontend_framework == "react" %}  - React + Vite{% endif -%}
+{% if is_web_app and frontend_framework == "vue" %}  - Vue + Vite{% endif -%}
+{% if is_web_app and frontend_framework == "hono_jsx" %}  - Hono JSX (SSR){% endif -%}
+{% if is_cli_tool %}  - commander{% endif -%}
+{% endif %}
 
 ## Commands
-- `make setup` — Initialize environment
-- `make lint` — Lint check
-- `make format` — Auto format
-- `make typecheck` — Type check
-- `make test` — Run tests
-- `make check` — Full check (lint + typecheck + test)
+```
+make setup      — Initialize environment
+make lint       — Lint check
+make lint-fix   — Auto-fix lint issues
+make format     — Auto format
+make typecheck  — Type check
+make test       — Run tests
+make check      — Full check (lint + typecheck + test)
 {% if needs_server -%}
-- `make dev` — Start dev server
-- `make test-e2e` — End-to-end test
+make dev        — Start dev server
+make test-e2e   — End-to-end test
 {% endif -%}
+```
 
 ## Project Structure
 {% if is_python -%}
 - `src/{{ project_slug }}/` — Source code
-{% if is_microservice or is_web_app -%}
-- `src/{{ project_slug }}/app.py` — FastAPI application
-- `src/{{ project_slug }}/routes/` — Route handlers
-- `src/{{ project_slug }}/config.py` — Configuration
-{% endif -%}
-{% if is_cli_tool -%}
-- `src/{{ project_slug }}/cli.py` — CLI entry point
-{% endif -%}
 {% elif is_typescript -%}
 - `src/` — Source code
-{% if is_microservice or is_web_app -%}
-- `src/app.ts` — Application entry
-- `src/routes/` — Route handlers
-- `src/config.ts` — Configuration
 {% endif -%}
-{% if is_cli_tool -%}
-- `src/cli.ts` — CLI entry point
-{% endif -%}
-{% endif -%}
-- `tests/` — Tests, mirroring src structure
+- `tests/` — Tests mirroring src
 
 ## Workflow
-- Plan first, then implement. Use Plan Mode for complex changes.
-- Run `make check` after changes, before commit.
-- Write/update tests first, then implement feature.
+1. Plan first, implement second.
+2. Write tests first, then implement.
+3. Run `make check` before commit.
 
 ## Boundaries
-### Always Do
-{% if is_python -%}
-- Strict types (pyright strict)
-{% else -%}
-- Strict types (tsconfig strict: true)
-{% endif -%}
-- New modules must have corresponding tests
-- Keep files under 300 lines
-- Commit format: type(scope): description (≤200 chars)
+### Always
+- Strict types · Tests for new modules · Files < 300 lines
+- Commits: `type(scope): description` (≤200 chars)
 
 ### Ask First
-- Adding new dependencies
-- Modifying CI configuration
-- Deleting public APIs
+- New dependencies · CI changes · Public API deletion
 
-### Never Do
-- No hardcoded secrets or passwords
-- No skipping pre-commit hooks
+### Never
+- No hardcoded secrets
 {% if is_python -%}
-- No `type: ignore` without comment explaining why
+- No `type: ignore` without comment
 {% else -%}
-- No `@ts-ignore` or `any` types
+- No `@ts-ignore` or `any`
 {% endif -%}
+- No skipping pre-commit hooks

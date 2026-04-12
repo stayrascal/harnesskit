@@ -12,28 +12,35 @@ warn() { echo "harness-check: WARN   $1"; WARN_COUNT=$((WARN_COUNT + 1)); }
 error() { echo "harness-check: ERROR  $1"; ERROR_COUNT=$((ERROR_COUNT + 1)); EXIT_CODE=1; }
 info() { echo "harness-check: INFO   $1"; }
 
-# --- Check CLAUDE.md exists ---
+# --- Check CLAUDE.md exists and length ---
 if [ ! -f "CLAUDE.md" ]; then
     error "CLAUDE.md not found in project root."
+else
+    claude_lines=$(wc -l < "CLAUDE.md")
+    if [ "$claude_lines" -gt 80 ]; then
+        warn "CLAUDE.md is $claude_lines lines (target: ≤80). AI agents work best with concise instructions."
+    fi
 fi
 
-# --- Check file sizes ---
+# --- Check source file sizes (300 recommend, 500 warn, 1000 error) ---
 SOURCE_DIR="src/"
 
 if [ -d "$SOURCE_DIR" ]; then
 {% if is_python -%}
-    FIND_PATTERN="-name *.py"
+    find_args=(-name "*.py")
 {% else -%}
-    FIND_PATTERN="-name *.ts -o -name *.tsx"
+    find_args=(-name "*.ts" -o -name "*.tsx")
 {% endif -%}
     while IFS= read -r -d '' file; do
         lines=$(wc -l < "$file")
         if [ "$lines" -gt 1000 ]; then
-            error "$file:1-$lines — File exceeds 1000 line limit ($lines lines). Must split."
+            error "$file:1-$lines — File exceeds 1000 lines ($lines). Must split."
         elif [ "$lines" -gt 500 ]; then
-            warn "$file:1-$lines — File exceeds 500 line limit ($lines lines). Consider splitting."
+            warn "$file:1-$lines — File exceeds 500 lines ($lines). Consider splitting."
+        elif [ "$lines" -gt 300 ]; then
+            info "$file:1-$lines — File exceeds 300 lines ($lines). Recommended to split."
         fi
-    done < <(find "$SOURCE_DIR" \( $FIND_PATTERN \) -print0)
+    done < <(find "$SOURCE_DIR" \( "${find_args[@]}" \) -print0)
 fi
 
 # --- Check test coverage (each src module has a test) ---
@@ -87,6 +94,11 @@ if [ -d "src" ]; then
     done
 fi
 {% endif -%}
+
+# --- Check commitlint config exists ---
+if [ ! -f "commitlint.config.js" ] && [ ! -f "commitlint.config.cjs" ] && [ ! -f ".commitlintrc.yml" ]; then
+    warn "No commitlint config found. Conventional commits may not be enforced."
+fi
 
 # --- Summary ---
 echo ""
