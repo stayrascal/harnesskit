@@ -1,0 +1,14 @@
+import { describe, expect, test } from "bun:test";
+import { add, greet } from "../src/core";
+
+describe("core", () => {
+	test("greet returns message", () => {
+		const result = greet("World");
+		expect(result).toContain("Hello, World!");
+	});
+
+	test("add returns sum", () => {
+		expect(add(2, 3)).toBe(5);
+		expect(add(-1, 1)).toBe(0);
+	});
+});

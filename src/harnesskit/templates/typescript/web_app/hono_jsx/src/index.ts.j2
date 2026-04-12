@@ -1,0 +1,13 @@
+/**
+ * {{ project_name }} — Hono JSX SSR
+ */
+
+import { app } from "./app";
+import { config } from "./config";
+
+console.log(`Starting {{ project_name }} on port ${config.PORT}...`);
+
+export default {
+	port: config.PORT,
+	fetch: app.fetch,
+};

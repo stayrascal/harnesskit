@@ -1,0 +1,19 @@
+/**
+ * Page routes with Hono JSX.
+ */
+
+import { Hono } from "hono";
+import { Layout } from "../views/index";
+
+const pageRoutes = new Hono();
+
+pageRoutes.get("/", (c) => {
+	return c.html(
+		<Layout title="{{ project_name }}">
+			<h1>{{ project_name }}</h1>
+			<p>{{ description }}</p>
+		</Layout>,
+	);
+});
+
+export { pageRoutes };

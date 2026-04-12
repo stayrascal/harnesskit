@@ -1,0 +1,27 @@
+{
+  "name": "{{ project_name }}",
+{% if is_python %}
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/astral-sh/uv-devcontainer-feature/uv:1": {}
+  },
+  "postCreateCommand": "uv sync --dev",
+{% else %}
+  "image": "oven/bun:1",
+  "postCreateCommand": "bun install",
+{% endif %}
+  "customizations": {
+    "vscode": {
+      "extensions": [
+{% if is_python %}
+        "charliermarsh.ruff",
+        "ms-python.python",
+        "ms-pyright.pyright"
+{% else %}
+        "biomejs.biome"
+{% endif %}
+      ]
+    }
+  },
+  "forwardPorts": [{% if needs_server %}{{ "8000" if is_python else "3000" }}{% endif %}]
+}

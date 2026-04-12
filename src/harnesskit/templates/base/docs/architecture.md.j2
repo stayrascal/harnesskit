@@ -1,0 +1,20 @@
+# Architecture — {{ project_name }}
+
+## Overview
+{{ description }}
+
+## Directory Structure
+{% if is_python -%}
+- `src/{{ project_slug }}/` — Main application code
+{% if is_microservice or is_web_app -%}
+- `src/{{ project_slug }}/routes/` — HTTP route handlers
+- `src/{{ project_slug }}/services/` — Business logic
+- `src/{{ project_slug }}/models/` — Data models
+{% endif -%}
+{% endif -%}
+- `tests/` — Unit and integration tests
+- `scripts/` — Helper scripts (harness-check, e2e tests)
+- `docs/` — Documentation and ADRs
+
+## Key Decisions
+See `docs/adr/` for Architecture Decision Records.

@@ -1,0 +1,53 @@
+{% if is_python -%}
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+
+# uv
+.python-version-*
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# pyright / mypy
+.pyright/
+.mypy_cache/
+{% else -%}
+# Node / Bun
+node_modules/
+dist/
+.cache/
+*.tsbuildinfo
+
+# Bun
+bun.lockb
+
+# Coverage
+coverage/
+{% endif -%}
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local

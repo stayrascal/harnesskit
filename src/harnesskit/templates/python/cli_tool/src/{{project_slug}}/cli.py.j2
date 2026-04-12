@@ -1,0 +1,21 @@
+"""CLI entry point for {{ project_name }}."""
+
+from __future__ import annotations
+
+import click
+
+from {{ project_slug }} import __version__
+from {{ project_slug }}.core import greet
+
+
+@click.group()
+@click.version_option(version=__version__, prog_name="{{ project_name }}")
+def main() -> None:
+    """{{ description }}"""
+
+
+@main.command()
+@click.argument("name", default="World")
+def hello(name: str) -> None:
+    """Greet someone."""
+    click.echo(greet(name))

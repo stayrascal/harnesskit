@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# harness-check — Verify harness engineering conventions
+# Run: make harness-check
+
+set -euo pipefail
+
+EXIT_CODE=0
+WARN_COUNT=0
+ERROR_COUNT=0
+
+warn() { echo "harness-check: WARN   $1"; WARN_COUNT=$((WARN_COUNT + 1)); }
+error() { echo "harness-check: ERROR  $1"; ERROR_COUNT=$((ERROR_COUNT + 1)); EXIT_CODE=1; }
+info() { echo "harness-check: INFO   $1"; }
+
+# --- Check CLAUDE.md exists ---
+if [ ! -f "CLAUDE.md" ]; then
+    error "CLAUDE.md not found in project root."
+fi
+
+# --- Check file sizes ---
+SOURCE_DIR="src/"
+
+if [ -d "$SOURCE_DIR" ]; then
+{% if is_python -%}
+    FIND_PATTERN="-name *.py"
+{% else -%}
+    FIND_PATTERN="-name *.ts -o -name *.tsx"
+{% endif -%}
+    while IFS= read -r -d '' file; do
+        lines=$(wc -l < "$file")
+        if [ "$lines" -gt 1000 ]; then
+            error "$file:1-$lines — File exceeds 1000 line limit ($lines lines). Must split."
+        elif [ "$lines" -gt 500 ]; then
+            warn "$file:1-$lines — File exceeds 500 line limit ($lines lines). Consider splitting."
+        fi
+    done < <(find "$SOURCE_DIR" \( $FIND_PATTERN \) -print0)
+fi
+
+# --- Check test coverage (each src module has a test) ---
+{% if is_python -%}
+if [ -d "src/{{ project_slug }}" ]; then
+    for src_file in src/{{ project_slug }}/*.py; do
+        [ -f "$src_file" ] || continue
+        basename=$(basename "$src_file" .py)
+        [ "$basename" = "__init__" ] && continue
+        [ "$basename" = "__main__" ] && continue
+        test_file="tests/test_${basename}.py"
+        if [ ! -f "$test_file" ]; then
+            warn "$src_file — Missing test file. Expected: $test_file"
+        fi
+    done
+fi
+{% elif is_typescript -%}
+if [ -d "src" ]; then
+    for src_file in src/*.ts; do
+        [ -f "$src_file" ] || continue
+        basename=$(basename "$src_file" .ts)
+        [ "$basename" = "index" ] && continue
+        [ "$basename" = "vite-env" ] && continue
+        test_file="tests/${basename}.test.ts"
+        if [ ! -f "$test_file" ]; then
+            warn "$src_file — Missing test file. Expected: $test_file"
+        fi
+    done
+fi
+{% endif -%}
+
+# --- Check directory naming ---
+{% if is_python -%}
+if [ -d "src/{{ project_slug }}" ]; then
+    for dir in src/{{ project_slug }}/*/; do
+        [ -d "$dir" ] || continue
+        dirname=$(basename "$dir")
+        if ! echo "$dirname" | grep -qE '^[a-z][a-z0-9_]*$'; then
+            warn "$dir — Directory should use snake_case naming."
+        fi
+    done
+fi
+{% elif is_typescript -%}
+if [ -d "src" ]; then
+    for dir in src/*/; do
+        [ -d "$dir" ] || continue
+        dirname=$(basename "$dir")
+        if ! echo "$dirname" | grep -qE '^[a-z][a-z0-9-]*$'; then
+            warn "$dir — Directory should use kebab-case naming."
+        fi
+    done
+fi
+{% endif -%}
+
+# --- Summary ---
+echo ""
+echo "harness-check: $ERROR_COUNT error(s), $WARN_COUNT warning(s)"
+exit $EXIT_CODE

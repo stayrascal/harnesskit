@@ -1,0 +1,11 @@
+"""Tests for page routes."""
+
+import pytest
+from httpx import AsyncClient
+
+
+@pytest.mark.anyio
+async def test_home_page_returns_html(client: AsyncClient) -> None:
+    response = await client.get("/")
+    assert response.status_code == 200
+    assert "text/html" in response.headers.get("content-type", "")

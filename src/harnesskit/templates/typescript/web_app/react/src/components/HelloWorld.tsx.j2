@@ -1,0 +1,9 @@
+import type { FC } from "react";
+
+interface HelloWorldProps {
+	name?: string;
+}
+
+export const HelloWorld: FC<HelloWorldProps> = ({ name = "World" }) => {
+	return <h2>Hello, {name}!</h2>;
+};

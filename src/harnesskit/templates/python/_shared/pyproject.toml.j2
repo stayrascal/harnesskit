@@ -1,0 +1,67 @@
+[project]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = "{{ description }}"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "{{ author }}" }]
+dependencies = [
+{% if is_cli_tool -%}
+    "click>=8.1",
+{% endif -%}
+{% if is_microservice -%}
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic-settings>=2.0",
+    "structlog>=24.0",
+{% endif -%}
+{% if is_web_app -%}
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic-settings>=2.0",
+    "structlog>=24.0",
+    "jinja2>=3.1",
+{% endif -%}
+]
+
+{% if is_cli_tool -%}
+[project.scripts]
+{{ project_slug }} = "{{ project_slug }}.cli:main"
+
+{% endif -%}
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pyright>=1.1",
+    "ruff>=0.8",
+    "pre-commit>=4.0",
+{% if is_microservice or is_web_app -%}
+    "httpx>=0.27",
+    "anyio[trio]>=4.0",
+    "pytest-anyio>=0.0.0",
+{% endif -%}
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "SIM", "TCH"]
+
+[tool.pyright]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+include = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{ project_slug }}"]

@@ -1,0 +1,13 @@
+"""Tests for core module."""
+
+from {{ project_slug }}.core import add, greet
+
+
+def test_greet_returns_message() -> None:
+    result = greet("World")
+    assert "Hello, World!" in result
+
+
+def test_add_returns_sum() -> None:
+    assert add(2, 3) == 5
+    assert add(-1, 1) == 0

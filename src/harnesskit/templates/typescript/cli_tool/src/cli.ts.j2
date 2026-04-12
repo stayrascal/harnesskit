@@ -1,0 +1,19 @@
+/**
+ * CLI entry point for {{ project_name }}.
+ */
+
+import { Command } from "commander";
+import { greet } from "./core";
+
+export const program = new Command()
+	.name("{{ project_name }}")
+	.description("{{ description }}")
+	.version("0.1.0");
+
+program
+	.command("hello")
+	.description("Greet someone")
+	.argument("[name]", "Name to greet", "World")
+	.action((name: string) => {
+		console.log(greet(name));
+	});

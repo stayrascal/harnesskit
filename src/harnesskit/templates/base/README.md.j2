@@ -1,0 +1,36 @@
+# {{ project_name }}
+
+{{ description }}
+
+## Quick Start
+
+```bash
+make setup
+{% if needs_server -%}
+make dev
+{% else -%}
+make test
+{% endif -%}
+```
+
+## Development
+
+```bash
+make lint        # Lint check
+make format      # Auto format
+make typecheck   # Type check
+make test        # Run tests
+make check       # Full check (lint + typecheck + test)
+```
+
+## Project Structure
+
+```
+{{ project_name }}/
+├── src/{{ project_slug }}/   # Source code
+├── tests/                     # Tests
+├── CLAUDE.md                  # AI agent instructions
+├── Makefile                   # Unified commands
+└── scripts/
+    └── harness-check.sh      # Harness engineering checks
+```

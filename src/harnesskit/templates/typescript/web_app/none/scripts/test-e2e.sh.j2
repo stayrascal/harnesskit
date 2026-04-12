@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Starting {{ project_name }}..."
+bun run src/index.ts &
+SERVER_PID=$!
+for i in $(seq 1 30); do
+    curl -sf http://127.0.0.1:3000/healthz > /dev/null 2>&1 && break
+    sleep 0.5
+done
+curl -sf http://127.0.0.1:3000/healthz | grep -q '"status":"ok"' && echo "Health OK" || { kill $SERVER_PID; exit 1; }
+kill $SERVER_PID 2>/dev/null || true
+echo "Done."

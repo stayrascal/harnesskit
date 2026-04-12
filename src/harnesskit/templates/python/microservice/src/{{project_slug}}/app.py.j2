@@ -1,0 +1,29 @@
+"""FastAPI application for {{ project_name }}."""
+
+from __future__ import annotations
+
+import structlog
+from fastapi import FastAPI
+
+from {{ project_slug }}.routes.health import router as health_router
+
+logger = structlog.get_logger()
+
+
+def create_app() -> FastAPI:
+    """Create and configure the FastAPI application."""
+    application = FastAPI(
+        title="{{ project_name }}",
+        description="{{ description }}",
+        version="0.1.0",
+    )
+    application.include_router(health_router)
+
+    @application.on_event("startup")
+    async def on_startup() -> None:
+        logger.info("application_started", app="{{ project_name }}")
+
+    return application
+
+
+app = create_app()

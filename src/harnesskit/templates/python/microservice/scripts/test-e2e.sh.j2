@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# End-to-end test: start server → healthcheck → stop
+set -euo pipefail
+
+echo "Starting {{ project_name }}..."
+uv run uvicorn {{ project_slug }}.app:app --host 127.0.0.1 --port 8000 &
+SERVER_PID=$!
+
+# Wait for server
+for i in $(seq 1 30); do
+    if curl -sf http://127.0.0.1:8000/healthz > /dev/null 2>&1; then
+        echo "Server is up!"
+        break
+    fi
+    sleep 0.5
+done
+
+# Run health check
+echo "Running health check..."
+RESPONSE=$(curl -sf http://127.0.0.1:8000/healthz)
+echo "Response: $RESPONSE"
+
+if echo "$RESPONSE" | grep -q '"status":"ok"'; then
+    echo "Health check passed"
+else
+    echo "Health check failed"
+    kill $SERVER_PID 2>/dev/null || true
+    exit 1
+fi
+
+# Cleanup
+kill $SERVER_PID 2>/dev/null || true
+echo "Done."

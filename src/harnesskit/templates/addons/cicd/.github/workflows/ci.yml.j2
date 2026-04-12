@@ -1,0 +1,22 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+{% if is_python %}
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --dev
+{% else %}
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+{% endif %}
+      - name: Lint
+        run: make lint
+      - name: Type Check
+        run: make typecheck
+      - name: Test
+        run: make test
+      - name: Harness Check
+        run: make harness-check

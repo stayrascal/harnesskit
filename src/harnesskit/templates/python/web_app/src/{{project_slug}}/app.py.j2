@@ -1,0 +1,40 @@
+"""FastAPI web application for {{ project_name }}."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import structlog
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+from {{ project_slug }}.routes.health import router as health_router
+from {{ project_slug }}.routes.pages import router as pages_router
+
+logger = structlog.get_logger()
+
+BASE_DIR = Path(__file__).parent
+
+
+def create_app() -> FastAPI:
+    """Create and configure the FastAPI application."""
+    application = FastAPI(
+        title="{{ project_name }}",
+        description="{{ description }}",
+        version="0.1.0",
+    )
+
+    application.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+    application.include_router(health_router)
+    application.include_router(pages_router)
+
+    @application.on_event("startup")
+    async def on_startup() -> None:
+        logger.info("application_started", app="{{ project_name }}")
+
+    return application
+
+
+app = create_app()
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))

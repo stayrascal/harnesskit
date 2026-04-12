@@ -1,0 +1,19 @@
+"""Page routes for {{ project_name }}."""
+
+from __future__ import annotations
+
+from fastapi import APIRouter, Request
+from fastapi.responses import HTMLResponse
+
+from {{ project_slug }}.app import templates
+
+router = APIRouter()
+
+
+@router.get("/", response_class=HTMLResponse)
+async def home(request: Request) -> HTMLResponse:
+    """Render the home page."""
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "title": "{{ project_name }}",
+    })

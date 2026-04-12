@@ -1,0 +1,16 @@
+/**
+ * Hono application for {{ project_name }}.
+ */
+
+import { Hono } from "hono";
+import { serveStatic } from "hono/bun";
+import { healthRoutes } from "./routes/health";
+import { pageRoutes } from "./routes/pages";
+
+const app = new Hono();
+
+app.use("/static/*", serveStatic({ root: "./src/public" }));
+app.route("/", healthRoutes);
+app.route("/", pageRoutes);
+
+export { app };

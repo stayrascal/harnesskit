@@ -1,0 +1,8 @@
+"""Tests for core module."""
+
+from {{ project_slug }}.core import greet
+
+
+def test_greet_returns_message() -> None:
+    result = greet("World")
+    assert "Hello, World!" in result

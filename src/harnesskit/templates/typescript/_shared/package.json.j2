@@ -1,0 +1,36 @@
+{
+  "name": "{{ project_name }}",
+  "version": "0.1.0",
+  "description": "{{ description }}",
+  "type": "module",
+{% if is_cli_tool %}  "bin": {
+    "{{ project_name }}": "./dist/index.js"
+  },
+{% endif %}  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "build": "bun build src/index.ts --outdir dist",
+    "lint": "biome check src/",
+    "format": "biome format --write src/",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "check": "bun run lint && bun run typecheck && bun test"
+  },
+  "dependencies": {
+{% if is_cli_tool -%}
+    "commander": "^12.0"
+{% elif is_microservice -%}
+    "hono": "^4.0",
+    "pino": "^9.0",
+    "zod": "^3.23"
+{% elif is_web_app -%}
+    "hono": "^4.0",
+    "pino": "^9.0",
+    "zod": "^3.23"
+{% endif -%}
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9",
+    "typescript": "^5.6",
+    "@types/bun": "^1.1"
+  }
+}

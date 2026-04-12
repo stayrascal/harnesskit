@@ -1,0 +1,9 @@
+import { describe, expect, test } from "bun:test";
+import { greet } from "../src/core";
+
+describe("core", () => {
+	test("greet returns message", () => {
+		const result = greet("World");
+		expect(result).toContain("Hello, World!");
+	});
+});

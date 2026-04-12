@@ -1,0 +1,11 @@
+{% raw %}<script setup lang="ts">
+interface Props {
+  name?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), { name: "World" });
+</script>
+
+<template>
+  <h2>Hello, {{ props.name }}!</h2>
+</template>{% endraw %}

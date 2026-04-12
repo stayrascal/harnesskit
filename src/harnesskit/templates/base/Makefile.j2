@@ -1,0 +1,99 @@
+.PHONY: setup lint format typecheck test test-cov check clean{% if needs_server %} dev test-e2e docker-build docker-run{% endif %}{% if is_library or is_cli_tool %} build{% endif %}{% if is_library %} publish{% endif %} harness-check
+
+{% if is_python -%}
+setup:            ## Initialize dev environment
+	uv sync --dev
+
+lint:             ## Ruff lint check
+	uv run ruff check src/ tests/
+
+format:           ## Ruff format
+	uv run ruff format src/ tests/
+
+typecheck:        ## Pyright type check
+	uv run pyright src/
+
+test:             ## Run tests
+	uv run pytest tests/ -v
+
+test-cov:         ## Run tests + coverage
+	uv run pytest tests/ -v --cov=src/{{ project_slug }} --cov-report=term-missing
+
+check:            ## Full check (CI use)
+	make lint && make typecheck && make test
+
+clean:            ## Clean build artifacts
+	rm -rf dist/ build/ *.egg-info
+{% if is_library or is_cli_tool %}
+build:            ## Build distribution
+	uv build
+{% endif %}
+{% if is_library %}
+publish:          ## Publish to PyPI
+	uv publish
+{% endif %}
+{% if is_cli_tool %}
+run:              ## Run the CLI
+	uv run {{ project_slug }}
+{% endif %}
+{% if needs_server %}
+dev:              ## Start dev server
+	uv run uvicorn {{ project_slug }}.app:app --reload --port 8000
+
+test-e2e:         ## End-to-end test
+	bash scripts/test-e2e.sh
+
+docker-build:     ## Build Docker image
+	docker build -t {{ project_name }} .
+
+docker-run:       ## Run Docker container
+	docker run -p 8000:8000 {{ project_name }}
+{% endif %}
+{% elif is_typescript -%}
+setup:            ## Install dependencies
+	bun install
+
+lint:             ## Biome lint check
+	bun run biome check src/
+
+format:           ## Biome format
+	bun run biome format --write src/
+
+typecheck:        ## TypeScript type check
+	bun run tsc --noEmit
+
+test:             ## Run tests
+	bun test
+
+test-cov:         ## Run tests with coverage
+	bun test --coverage
+
+check:            ## Full check (CI use)
+	make lint && make typecheck && make test
+
+clean:            ## Clean build artifacts
+	rm -rf dist/ node_modules/
+{% if is_library or is_cli_tool %}
+build:            ## Build
+	bun build src/index.ts --outdir dist
+{% endif %}
+{% if is_cli_tool %}
+run:              ## Run the CLI
+	bun run src/index.ts
+{% endif %}
+{% if needs_server %}
+dev:              ## Start dev server
+	bun run --hot src/index.ts
+
+test-e2e:         ## End-to-end test
+	bash scripts/test-e2e.sh
+
+docker-build:     ## Build Docker image
+	docker build -t {{ project_name }} .
+
+docker-run:       ## Run Docker container
+	docker run -p 3000:3000 {{ project_name }}
+{% endif %}
+{% endif -%}
+harness-check:    ## Run harness engineering checks
+	bash scripts/harness-check.sh
