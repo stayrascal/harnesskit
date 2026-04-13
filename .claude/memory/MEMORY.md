@@ -1,0 +1,2 @@
+- [Template Consistency](template_consistency.md) — Ensure changes to project config are also reflected in templates
+- [Proactive CI Verification](proactive_ci_verification.md) — Proactively verify CI status after pushing changes
