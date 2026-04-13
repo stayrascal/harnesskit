@@ -1,4 +1,4 @@
-.PHONY: setup dev lint lint-fix format typecheck test test-cov clean build publish check harness-check
+.PHONY: setup dev lint lint-fix format typecheck test test-cov clean build publish publish-test check harness-check
 
 setup:            ## Initialize dev environment
 	uv sync --dev
@@ -34,5 +34,8 @@ clean:            ## Clean build artifacts
 build:            ## Build distribution
 	uv build
 
-publish:          ## Publish to PyPI
-	uv publish
+publish:          ## Publish to PyPI (with checks and optional git tag)
+	bash scripts/publish.sh
+
+publish-test:     ## Publish to TestPyPI (for testing)
+	bash scripts/publish.sh --testpypi
