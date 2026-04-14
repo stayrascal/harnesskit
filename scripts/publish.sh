@@ -102,7 +102,7 @@ publish_testpypi() {
     log_info "Publishing to TestPyPI..."
     cd "${REPO_ROOT}"
 
-    if ! uv publish --index https://test.pypi.org/simple/; then
+    if ! uv publish --index testpypi; then
         log_error "Publishing to TestPyPI failed."
         return 1
     fi
@@ -115,7 +115,7 @@ publish_pypi() {
     log_info "Publishing to PyPI..."
     cd "${REPO_ROOT}"
 
-    if ! uv publish; then
+    if ! uv publish --index pypi; then
         log_error "Publishing to PyPI failed."
         return 1
     fi
