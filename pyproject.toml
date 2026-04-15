@@ -49,7 +49,7 @@ testpaths = ["tests"]
 [tool.hatch.build.targets.wheel]
 packages = ["src/harnesskit"]
 
-[tool.uv.index]
+[[tool.uv.index]]
 name = "pypi"
 url = "https://pypi.org/simple"
 publish-url = "https://upload.pypi.org/legacy/"
