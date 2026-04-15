@@ -13,6 +13,53 @@ NC='\033[0m' # No Color
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PYPROJECT_TOML="${REPO_ROOT}/pyproject.toml"
 DIST_DIR="${REPO_ROOT}/dist"
+PYPIRC="${HOME}/.pypirc"
+
+# Read credentials from ~/.pypirc
+read_pypirc() {
+    local index=$1
+    local username=""
+    local password=""
+    local in_section=false
+
+    if [[ ! -f "${PYPIRC}" ]]; then
+        log_error " ~/.pypirc not found"
+        return 1
+    fi
+
+    while IFS= read -r line; do
+        # Skip comments and empty lines
+        [[ "${line}" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "${line}" ]] && continue
+
+        # Check for section header
+        if [[ "${line}" =~ ^\[([^\]]+)\] ]]; then
+            local section="${BASH_REMATCH[1]}"
+            if [[ "${section}" == "${index}" ]]; then
+                in_section=true
+            else
+                in_section=false
+            fi
+            continue
+        fi
+
+        # Parse key-value pairs in the correct section
+        if [[ "${in_section}" == "true" ]]; then
+            if [[ "${line}" =~ ^[[:space:]]*username[[:space:]]*=[[:space:]]*(.+)$ ]]; then
+                username="${BASH_REMATCH[1]}"
+            elif [[ "${line}" =~ ^[[:space:]]*password[[:space:]]*=[[:space:]]*(.+)$ ]]; then
+                password="${BASH_REMATCH[1]}"
+            fi
+        fi
+    done < "${PYPIRC}"
+
+    if [[ -z "${username}" ]] || [[ -z "${password}" ]]; then
+        log_error "Could not find username/password for [${index}] in ~/.pypirc"
+        return 1
+    fi
+
+    echo "${username}" "${password}"
+}
 
 # Functions
 log_info() {
@@ -102,7 +149,18 @@ publish_testpypi() {
     log_info "Publishing to TestPyPI..."
     cd "${REPO_ROOT}"
 
-    if ! uv publish --index testpypi; then
+    local credentials
+    if ! credentials=$(read_pypirc "testpypi"); then
+        log_error "Failed to read TestPyPI credentials from ~/.pypirc"
+        return 1
+    fi
+
+    local username password
+    read -r username password <<< "${credentials}"
+
+    if ! uv publish --username "${username}" --password "${password}" \
+        --publish-url https://upload.test.pypi.org/legacy/ \
+        --check-url https://test.pypi.org/simple/; then
         log_error "Publishing to TestPyPI failed."
         return 1
     fi
@@ -115,7 +173,16 @@ publish_pypi() {
     log_info "Publishing to PyPI..."
     cd "${REPO_ROOT}"
 
-    if ! uv publish --index pypi; then
+    local credentials
+    if ! credentials=$(read_pypirc "pypi"); then
+        log_error "Failed to read PyPI credentials from ~/.pypirc"
+        return 1
+    fi
+
+    local username password
+    read -r username password <<< "${credentials}"
+
+    if ! uv publish --username "${username}" --password "${password}"; then
         log_error "Publishing to PyPI failed."
         return 1
     fi
