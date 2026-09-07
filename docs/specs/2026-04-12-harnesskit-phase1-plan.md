@@ -1054,8 +1054,7 @@ def collect_inputs(project_name: str | None = None) -> ProjectConfig:
     addon_values: list[str] = questionary.checkbox(
         "Select addons:",
         choices=[
-            questionary.Choice(c["name"], value=c["value"], checked=c["value"] in defaults)
-            for c in ADDON_CHOICES
+            questionary.Choice(c["name"], value=c["value"], checked=c["value"] in defaults) for c in ADDON_CHOICES
         ],
     ).unsafe_ask()
 
@@ -1194,7 +1193,9 @@ def new(name: str | None, output_dir: Path | None) -> None:
         _git_init(project_path)
 
     console.print(f"\n✨ Created [bold green]{config.project_name}/[/bold green]", end="")
-    console.print(f" with {config.language.value.title()} + {config.project_type.value.replace('_', ' ').title()} template")
+    console.print(
+        f" with {config.language.value.title()} + {config.project_type.value.replace('_', ' ').title()} template"
+    )
 
     if config.addons:
         console.print(f"   Addons: {', '.join(config.addons)}")
@@ -1300,11 +1301,20 @@ def test_python_library_generates_all_expected_files(tmp_path: Path) -> None:
 
     project = tmp_path / "testproject"
     expected_files = [
-        "CLAUDE.md", "AGENTS.md", "Makefile", ".gitignore", "README.md", "LICENSE",
-        "docs/adr/000-template.md", "docs/architecture.md",
+        "CLAUDE.md",
+        "AGENTS.md",
+        "Makefile",
+        ".gitignore",
+        "README.md",
+        "LICENSE",
+        "docs/adr/000-template.md",
+        "docs/architecture.md",
         "scripts/harness-check.sh",
-        "pyproject.toml", ".pre-commit-config.yaml", ".python-version",
-        "src/testproject/__init__.py", "src/testproject/core.py",
+        "pyproject.toml",
+        ".pre-commit-config.yaml",
+        ".python-version",
+        "src/testproject/__init__.py",
+        "src/testproject/core.py",
         "tests/test_core.py",
     ]
     for f in expected_files:
